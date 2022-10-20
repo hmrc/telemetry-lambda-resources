@@ -12,8 +12,7 @@ set -o nounset
 BASE_LOCATION="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LAMBDA_ZIP_NAME="lambda.zip"
 PATH_BUILD="${BASE_LOCATION}/build"
-# TODO FIX THIS ASAP - Derive Programmatically
-PROJECT_FULL_NAME=""
+PROJECT_FULL_NAME="{{ cookiecutter.repository_name }}"
 
 S3_TELEMETRY_LAMBDA_ROOT="telemetry-internal-base-lambda-artifacts"
 S3_LAMBDA_SUB_FOLDER="build-${PROJECT_FULL_NAME}"
