@@ -1,0 +1,4 @@
+{
+  "site_name": null,
+  "repository_name": "{{ cookiecutter.site_name|lower|replace(' ', '-') }}"
+}
