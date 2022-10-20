@@ -6,9 +6,6 @@ POETRY_VIRTUALENVS_IN_PROJECT ?= true
 PYTHON_OK := $(shell type -P python)
 PYTHON_REQUIRED := $(shell cat .python-version)
 PYTHON_VERSION ?= $(shell python -V | cut -d' ' -f2)
-ROOT_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
-MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-CURRENT_DIR := $(notdir $(patsubst %/,%,$(dir $(MAKEFILE_PATH))))
 
 BUCKET_NAME := {{ cookiecutter.lambda_artifacts_bucket }}
 LAMBDA_NAME := {{ cookiecutter.repository_name }}
