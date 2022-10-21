@@ -26,9 +26,22 @@ The repository is meant to be used as a cookiecutter source inside the `telemetr
 to the consuming repository run the command below in the root.
 
 ```shell
+# Update project
+git checkout --branch TEL-3093-add-cruft
+poetry update
 poetry add --group dev cruft cookiecutter
-cruft link https://github.com/hmrc/telemetry-lambda-resources
+
+# Link the templates repository
+cruft link https://github.com/hmrc/telemetry-lambda-resources # Carefully enter the properties into the prompts
+
+# Run update (this doesn't patch up local files with the contents of the templates repository)
 cruft update
+
+# Run a diff and apply those changes (this does patch up local files)
+cruft diff | git apply
+
+# Optional step if check-tool-versions.sh is not in the right place
+git mv bin/check-tool-versions.sh tools/check-tool-versions.sh
 ```
 
 ## Updating the repository
