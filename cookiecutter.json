@@ -1,5 +1,6 @@
 {
+  "custom_makefile_name": "",
   "lambda_artifacts_bucket": "telemetry-internal-base-lambda-artifacts",
-  "site_name": null,
-  "repository_name": "{{ cookiecutter.site_name|lower|replace(' ', '-') }}"
+  "lambda_name": null,
+  "lambda_name_formatted": "{{ cookiecutter.lambda_name|lower|replace(' ', '-') }}"
 }
