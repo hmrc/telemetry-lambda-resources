@@ -41,7 +41,7 @@ cruft update
 cruft diff | git apply
 
 # Optional step if check-tool-versions.sh is not in the right place
-git mv bin/assemble-lambda.sh tools/package-lambda.sh
+git mv bin/assemble-lambda.sh bin/package-lambda.sh
 
 # Optional step if check-tool-versions.sh is not in the right place
 git mv bin/check-tool-versions.sh tools/check-tool-versions.sh
