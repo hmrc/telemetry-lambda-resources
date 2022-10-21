@@ -12,7 +12,7 @@ set -o nounset
 BASE_LOCATION="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LAMBDA_ZIP_NAME="lambda.zip"
 PATH_BUILD="${BASE_LOCATION}/build"
-PROJECT_FULL_NAME="{{ cookiecutter.repository_name }}"
+PROJECT_FULL_NAME="{{ cookiecutter.lambda_name_formatted }}"
 
 S3_TELEMETRY_LAMBDA_ROOT="{{ cookiecutter.lambda_artifacts_bucket }}"
 S3_LAMBDA_SUB_FOLDER="build-${PROJECT_FULL_NAME}"
