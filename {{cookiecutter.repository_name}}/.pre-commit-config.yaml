@@ -7,12 +7,12 @@ repos:
         language: script
         pass_filenames: false
       - id: validate-cruft-up-to-date
-        name: Validate cruft up-to-date
+        name: Validate Cruft up-to-date
         entry: cruft check
         language: system
         pass_filenames: false
       - id: validate-cruft-no-diff
-        name: Validate cruft drift
+        name: Validate Cruft drift
         entry: cruft diff --exit-code
         language: system
         pass_filenames: false
