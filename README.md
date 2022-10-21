@@ -41,6 +41,10 @@ cruft check
 cruft diff
 cruft update --skip-apply-as
 ```
+## References
+
+* [Cruft](https://cruft.github.io/cruft)
+* [Cookiecutter](https://cookiecutter.readthedocs.io/en/stable/)
 
 ## License
 
