@@ -40,8 +40,8 @@ cruft update
 # Run a diff and apply those changes (this does patch up local files)
 cruft diff | git apply
 
-# Optional step if check-tool-versions.sh is not in the right place
-git mv bin/assemble-lambda.sh tools/package-lambda.sh
+# Optional step if assemble-lambda.sh needs to be renamed package-lambda.sh
+git mv bin/assemble-lambda.sh bin/package-lambda.sh
 
 # Optional step if check-tool-versions.sh is not in the right place
 git mv bin/check-tool-versions.sh tools/check-tool-versions.sh
