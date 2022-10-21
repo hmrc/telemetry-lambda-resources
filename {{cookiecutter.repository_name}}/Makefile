@@ -15,6 +15,10 @@ help: ## The help text you're reading
 	@grep --no-filename -E '^[a-zA-Z1-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 .PHONY: help
 
+{% if cookiecutter.custom_makefile_name %}
+include {{ cookiecutter.custom_makefile_name }}
+{% endif %}
+
 bandit: ## Run bandit against python code
 	@poetry run bandit -r ./src -c .bandit
 .PHONY: bandit
