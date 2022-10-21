@@ -1,14 +1,15 @@
 # telemetry-lambda-resources
 
-# Table of Contents
+[![Brought to you by Telemetry Team](https://img.shields.io/badge/MDTP-Telemetry-40D9C0?style=flat&labelColor=000000&logo=gov.uk)](https://confluence.tools.tax.service.gov.uk/display/TEL/Telemetry)
+
+## Table of Contents
+* [Overview](#Overview)
 * [Linking the repository](#Linking-the-repository)
 * [Updating the repository](#Updating-the-repository)
 * [References](#References)
 * [License](#License)
 
-
-[![Brought to you by Telemetry Team](https://img.shields.io/badge/MDTP-Telemetry-40D9C0?style=flat&labelColor=000000&logo=gov.uk)](https://confluence.tools.tax.service.gov.uk/display/TEL/Telemetry)
-
+## Overview
 This repository contains [cookiecutter](https://github.com/cookiecutter/cookiecutter) template resources for Telemetry AWS
 Lambda repositories. Only long-term, common and stable files should be added, e.g. scripts or configurations that, when
 the need to be changed, they can be changed in unison. It is worth noting that files in this template repository can be 
@@ -31,6 +32,13 @@ git checkout --branch TEL-3093-add-cruft
 poetry update
 poetry add --group dev cruft cookiecutter
 
+# Optional step if assemble-lambda.sh needs to be renamed package-lambda.sh
+git mv bin/assemble-lambda.sh bin/package-lambda.sh
+
+# Optional step if check-tool-versions.sh is not in the right place
+mkdir -p tools
+git mv bin/check-tool-versions.sh tools/check-tool-versions.sh
+
 # Link the templates repository
 cruft link https://github.com/hmrc/telemetry-lambda-resources # Carefully enter the properties into the prompts
 
@@ -39,12 +47,6 @@ cruft update
 
 # Run a diff and apply those changes (this does patch up local files)
 cruft diff | git apply
-
-# Optional step if assemble-lambda.sh needs to be renamed package-lambda.sh
-git mv bin/assemble-lambda.sh bin/package-lambda.sh
-
-# Optional step if check-tool-versions.sh is not in the right place
-git mv bin/check-tool-versions.sh tools/check-tool-versions.sh
 ```
 
 ## Updating the repository
@@ -52,8 +54,9 @@ git mv bin/check-tool-versions.sh tools/check-tool-versions.sh
 ```shell
 cruft check
 cruft diff
-cruft update --skip-apply-as
+cruft update --skip-apply-ask
 ```
+
 ## References
 
 * [Cruft](https://cruft.github.io/cruft)
