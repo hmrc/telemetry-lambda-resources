@@ -11,4 +11,4 @@ RUN python -m venv venv && \
 
 COPY src tests ${LAMBDA_TASK_ROOT}/
 
-CMD [ "handler.lambda_handler" ]
+CMD [ "{{ cookiecutter.lambda_handler }}" ]
