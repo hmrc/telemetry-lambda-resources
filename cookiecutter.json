@@ -5,5 +5,5 @@
   "lambda_handler": "handler.lambda_handler",
   "lambda_name": null,
   "lambda_name_formatted": "{{ cookiecutter.lambda_name|lower|replace(' ', '-') }}",
-  "unit_test_module": "pytest"
+  "unit_test_style": "pytest"
 }
