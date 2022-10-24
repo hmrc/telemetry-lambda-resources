@@ -12,9 +12,9 @@
 ## Overview
 This repository contains [cookiecutter](https://github.com/cookiecutter/cookiecutter) template resources for Telemetry AWS
 Lambda repositories. Only long-term, common and stable files should be added, e.g. scripts or configurations that, when
-the need to be changed, they can be changed in unison. It is worth noting that files in this template repository can be 
+the need to be changed, they can be changed in unison. It is worth noting that files in this template repository can be
 overridden in the repository using the templates. Simply add the file to a skip list defined in the `pyproject.toml` in
-the lambda repo. 
+the lambda repo.
 
 ```toml
 [tool.cruft]
