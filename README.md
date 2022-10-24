@@ -55,6 +55,9 @@ cruft diff | git apply
 cruft check
 cruft diff
 cruft update --skip-apply-ask
+
+# If the update does not work - an update can be forced
+cruft diff | git apply
 ```
 
 ## References
