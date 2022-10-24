@@ -4,5 +4,6 @@
   "lambda_artifacts_bucket": "telemetry-internal-base-lambda-artifacts",
   "lambda_handler": "handler.lambda_handler",
   "lambda_name": null,
-  "lambda_name_formatted": "{{ cookiecutter.lambda_name|lower|replace(' ', '-') }}"
+  "lambda_name_formatted": "{{ cookiecutter.lambda_name|lower|replace(' ', '-') }}",
+  "unit_test_module": "pytest"
 }
