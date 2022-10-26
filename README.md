@@ -4,7 +4,8 @@
 
 ## Table of Contents
 * [Overview](#Overview)
-* [Linking the repository](#Linking-the-repository)
+* [Initialising a repository](#Initialising-a-repository)
+* [Linking an existing repository](#Linking-an-existing-repository)
 * [Updating the repository](#Updating-the-repository)
 * [References](#References)
 * [License](#License)
@@ -21,24 +22,56 @@ the lambda repo.
 skip = [".bandit"]
 ```
 
-## Linking the repository
+## Initialising a repository
 
-The repository is meant to be used as a cookiecutter source inside the `telemetry-lambda-*` repos. To add the templates
-to the consuming repository run the command below in the root.
+If you have a new "empty" repository created by the [Jenkins build job](https://build.tax.service.gov.uk/job/PlatOps/job/Tools/job/create-a-repository/)
+then it is possible to seed that repo with the contents of a cruft template repository. Follow the instructions in this Confluence article [Using Cruft to initialise a new repository](https://confluence.tools.tax.service.gov.uk/display/TEL/Using+Cruft+to+initialise+a+new+repository) for guidance.
+
+```shell
+# Script used in article
+git clone git@hmrc:hmrc/aws-lambda-telemetry-test
+cd aws-lambda-telemetry-test
+git checkout -b TEL-3166-add-cruft
+cd ..
+cruft create --overwrite-if-exists https://github.com/hmrc/telemetry-lambda-resources
+cd aws-lambda-telemetry-test
+git add .
+git status
+git commit -a -m "TEL-3166: add cruft" -m "Co-authored-by: Lee Myring <29373851+thinkstack@users.noreply.github.com>"
+poetry init
+# Team Telemetry <telemetry@digital.hmrc.gov.uk>
+git add .
+git commit -a -m "TEL-3166: add poetry" -m "Co-authored-by: Lee Myring <29373851+thinkstack@users.noreply.github.com>"
+```
+
+## Linking an existing repository
+
+The repository is meant to be used as a cookiecutter source inside the `aws-lambda-*` repos. To add the templates
+to the consuming repository, follow the procedure below.
 
 ```shell
 # Update project
 git checkout --branch TEL-3093-add-cruft
 poetry update
 poetry add --group dev cruft cookiecutter
+```
 
-# Optional step if assemble-lambda.sh needs to be renamed package-lambda.sh
-git mv bin/assemble-lambda.sh bin/package-lambda.sh
+For the next step, navigate to the folder above. **Note:** this is important as the cruft create will use the
+`cruft_repo_name` property to insert the templated files, overwriting where necessary, into the actual project folder
 
-# Optional step if check-tool-versions.sh is not in the right place
-mkdir -p tools
-git mv bin/check-tool-versions.sh tools/check-tool-versions.sh
+```shell
+# This is an example to demonstrate the commands, your folders will be different
+pwd # ~/source/hmrc/aws-lambda-telemetry-test
+cd ..
+pwd # ~/source/hmrc
+cruft create --overwrite-if-exists https://github.com/hmrc/telemetry-lambda-resources
+# At the `lambda_name` prompt make sure you enter `aws-lambda-telemetry-test` to target the correct project
+cd -
+pwd # ~/source/hmrc/aws-lambda-telemetry-test
+git add .
+```
 
+```shell
 # Link the templates repository
 cruft link https://github.com/hmrc/telemetry-lambda-resources # Carefully enter the properties into the prompts
 
@@ -50,6 +83,8 @@ cruft diff | git apply
 ```
 
 ## Updating the repository
+
+Follow the instructions in this Confluence article [Using Cruft to update an existing repository](https://confluence.tools.tax.service.gov.uk/display/TEL/Using+Cruft+to+update+an+existing+repository) for guidance.
 
 ```shell
 cruft check
