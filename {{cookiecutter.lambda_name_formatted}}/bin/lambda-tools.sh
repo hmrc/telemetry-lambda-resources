@@ -207,7 +207,7 @@ main() {
   # Validate command arguments
   [ "$#" -ne 1 ] && help && exit 1
   function="$1"
-  functions="help debug_env open_shell unittest package publish publish_artifacts publish_artifacts_mdtp publish_artifacts_cip prepare_release print_configs cut_release"
+  functions="help debug_env open_shell unittest package publish_artifacts publish_artifacts_mdtp publish_artifacts_cip prepare_release print_configs cut_release"
   [[ $functions =~ (^|[[:space:]])"$function"($|[[:space:]]) ]] || (echo -e "\n\"$function\" is not a valid command. Try \"$0 help\" for more details" && exit 2)
 
   # Ensure build folder is available
