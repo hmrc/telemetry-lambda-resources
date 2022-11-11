@@ -72,9 +72,17 @@ prepare_release: ## Runs prepare release
 	@./bin/lambda-tools.sh prepare_release
 .PHONY: prepare_release
 
-publish: ## Build and push lambda zip to S3 (requires MDTP_ENVIRONMENT to be set to an environment)
-	@./bin/lambda-tools.sh publish
-.PHONY: publish
+publish_artifacts: package ## Build and push lambda zip to S3 (requires MDTP_ENVIRONMENT to be set to an environment)
+	@./bin/lambda-tools.sh publish_artifacts
+.PHONY: publish_artifacts
+
+publish_artifacts_cip: package ## Build and push lambda zip to CiP (txm) S3 bucket
+	@./bin/lambda-tools.sh publish_artifacts_cip
+.PHONY: publish_artifacts_cip
+
+publish_artifacts_mdtp: package ## Build and push lambda zip to MDTP S3 bucket
+	@./bin/lambda-tools.sh publish_artifacts_mdtp
+.PHONY: publish_artifacts_mdtp
 
 safety: ## Run Safety
 	@poetry run safety check
@@ -99,5 +107,5 @@ test: setup ## Run unit tests
 verify: test bandit black safety ## Run all the checks and tests
 .PHONY: verify
 
-verify_publish_release: verify prepare_release publish cut_release ## Run all the checks and tests, package, publish and release the lambda
+verify_publish_release: verify prepare_release publish_artifacts cut_release ## Run all the checks and tests, package, publish_artifacts and release the lambda
 .PHONY: verify_publish_release
