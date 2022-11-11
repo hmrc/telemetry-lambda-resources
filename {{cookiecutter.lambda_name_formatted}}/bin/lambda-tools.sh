@@ -104,7 +104,7 @@ publish_artifacts() {
 
   export_version
   export S3_OBJECT_KEY="${PROJECT_FULL_NAME}.${VERSION}.zip"
-  export S3_OBJECT_HASH_KEY="${S3_OBJECT_NAME}.base64sha256"
+  export S3_OBJECT_HASH_KEY="${S3_OBJECT_KEY}.base64sha256"
 
   aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "${S3_ADDRESS}/${S3_OBJECT_KEY}" \
     --acl=bucket-owner-full-control
@@ -120,7 +120,7 @@ publish_artifacts_cip() {
 
   export_version
   export S3_OBJECT_KEY="${PROJECT_FULL_NAME}.${VERSION}.zip"
-  export S3_OBJECT_HASH_KEY="${S3_OBJECT_NAME}.base64sha256"
+  export S3_OBJECT_HASH_KEY="${S3_OBJECT_KEY}.base64sha256"
 
   for env in integration qa externaltest staging production ; do
     aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "s3://txm-lambda-functions-${env}/${S3_OBJECT_KEY}" \
@@ -138,7 +138,7 @@ publish_artifacts_mdtp() {
 
   export_version
   export S3_OBJECT_KEY="${PROJECT_FULL_NAME}.${VERSION}.zip"
-  export S3_OBJECT_HASH_KEY="${S3_OBJECT_NAME}.base64sha256"
+  export S3_OBJECT_HASH_KEY="${S3_OBJECT_KEY}.base64sha256"
 
   for env in integration development qa staging management externaltest production ; do
     aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "s3://mdtp-lambda-functions-${env}/${S3_OBJECT_KEY}" \
