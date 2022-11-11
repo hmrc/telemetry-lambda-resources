@@ -11,6 +11,7 @@ set -o nounset
 
 BASE_LOCATION="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LAMBDA_ZIP_NAME="lambda.zip"
+LAMBDA_HASH_NAME="${LAMBDA_ZIP_NAME}.base64sha256"
 PATH_BUILD="${BASE_LOCATION}/build"
 PROJECT_FULL_NAME="{{ cookiecutter.lambda_name_formatted }}"
 
@@ -23,7 +24,7 @@ S3_ADDRESS="s3://${S3_TELEMETRY_LAMBDA_ROOT}/${S3_LAMBDA_SUB_FOLDER}"
 
 debug_env(){
   echo BASE_LOCATION="${BASE_LOCATION}"
-  echo PROJECT_FULL_NAME=${PROJECT_FULL_NAME}
+  echo PROJECT_FULL_NAME="${PROJECT_FULL_NAME}"
   echo PATH_BUILD="${PATH_BUILD}"
   echo S3_TELEMETRY_LAMBDA_ROOT="${S3_TELEMETRY_LAMBDA_ROOT}"
   echo S3_ADDRESS="${S3_ADDRESS}"
@@ -69,7 +70,8 @@ package() {
              --tty \
              --volume "${BASE_LOCATION}":/data \
              --workdir /data \
-             --env LAMBDA_ZIP_NAME=${LAMBDA_ZIP_NAME} \
+             --env LAMBDA_ZIP_NAME="${LAMBDA_ZIP_NAME}" \
+             --env LAMBDA_HASH_NAME="${LAMBDA_HASH_NAME}" \
              --env REQUIREMENTS_FILE="requirements.txt" \
              --env VENV_NAME="venv_package" \
              python:$(cat "${BASE_LOCATION}/.python-version")-slim-buster /data/bin/entrypoint.sh /data/bin/package-lambda.sh
@@ -96,40 +98,55 @@ prepare_release() {
   print_completed
 }
 
-# Take all the necessary steps to build and publish both lambda function's zip and checksum files
-publish() {
-  print_begins
-
-  package
-  publish_artifacts_to_s3
-  publish_checksum_file
-
-  print_completed
-}
-
 # Upload artifacts to S3
-publish_artifacts_to_s3() {
+publish_artifacts() {
   print_begins
 
   export_version
+  export S3_OBJECT_KEY="${PROJECT_FULL_NAME}.${VERSION}.zip"
+  export S3_OBJECT_HASH_KEY="${S3_OBJECT_NAME}.base64sha256"
 
-  aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "${S3_ADDRESS}/${PROJECT_FULL_NAME}.${VERSION}.zip" \
-      --acl=bucket-owner-full-control
+  aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "${S3_ADDRESS}/${S3_OBJECT_KEY}" \
+    --acl=bucket-owner-full-control
+  aws s3 cp "${PATH_BUILD}/${LAMBDA_HASH_NAME}" "${S3_ADDRESS}/${S3_OBJECT_HASH_KEY}" \
+    --acl=bucket-owner-full-control \
+    --content-type text/plain
 
   print_completed
 }
 
-# Download the artifacts zip file and generate its checksum file to be stored alongside it
-publish_checksum_file() {
+publish_artifacts_cip() {
   print_begins
 
   export_version
-  export FILE_NAME="${PROJECT_FULL_NAME}.${VERSION}.zip"
-  export HASH_FILE_NAME="${FILE_NAME}.base64sha256"
-  aws s3 cp "${S3_ADDRESS}/${FILE_NAME}" "${PATH_BUILD}/${FILE_NAME}"
-  openssl dgst -sha256 -binary "${PATH_BUILD}/${FILE_NAME}" | openssl enc -base64 >"${PATH_BUILD}/${HASH_FILE_NAME}"
-  aws s3 cp "${PATH_BUILD}/${HASH_FILE_NAME}" "${S3_ADDRESS}/${HASH_FILE_NAME}" \
-    --content-type text/plain --acl=bucket-owner-full-control
+  export S3_OBJECT_KEY="${PROJECT_FULL_NAME}.${VERSION}.zip"
+  export S3_OBJECT_HASH_KEY="${S3_OBJECT_NAME}.base64sha256"
+
+  for env in integration development qa staging management externaltest production ; do
+    aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "s3://txm-lambda-functions-${env}/${S3_OBJECT_KEY}" \
+      --acl=bucket-owner-full-control
+    aws s3 cp "${PATH_BUILD}/${LAMBDA_HASH_NAME}" "s3://txm-lambda-functions-${env}/${S3_OBJECT_HASH_KEY}" \
+       --acl=bucket-owner-full-control \
+       --content-type text/plain
+  done
+
+  print_completed
+}
+
+publish_artifacts_mdtp() {
+  print_begins
+
+  export_version
+  export S3_OBJECT_KEY="${PROJECT_FULL_NAME}.${VERSION}.zip"
+  export S3_OBJECT_HASH_KEY="${S3_OBJECT_NAME}.base64sha256"
+
+  for env in integration development qa staging management externaltest production ; do
+    aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "s3://mdtp-lambda-functions-${env}/${S3_OBJECT_KEY}" \
+      --acl=bucket-owner-full-control
+    aws s3 cp "${PATH_BUILD}/${LAMBDA_HASH_NAME}" "s3://mdtp-lambda-functions-${env}/${S3_OBJECT_HASH_KEY}" \
+       --acl=bucket-owner-full-control \
+       --content-type text/plain
+  done
 
   print_completed
 }
@@ -144,8 +161,8 @@ export_version() {
     exit 1
   fi
 
-  export VERSION=$(cat .version)
-
+  VERSION=$(cat .version)
+  export
 }
 
 help() {
@@ -154,9 +171,9 @@ help() {
   echo "Available commands:"
   echo -e " - package\t\t\t Prepare dependencies and build the Lambda function code using Docker"
   echo -e " - prepare_release\t\t Bump the function's version when appropriate"
-  echo -e " - publish\t\t\t Package and share artifacts by running package, publish_artifacts_to_s3 and publish_checksum_file commands"
-  echo -e " - publish_artifacts_to_s3\t Upload artifacts to ${S3_ADDRESS}"
-  echo -e " - publish_checksum_file\t Generate a checksum for the artifacts zip file and store in the same S3 location (${S3_LAMBDA_SUB_FOLDER})"
+  echo -e " - publish_artifacts\t Upload artifacts to ${S3_ADDRESS}"
+  echo -e " - publish_artifacts_cip\t Upload artifacts to CiP (txm) S3 buckets"
+  echo -e " - publish_artifacts_mdtp\t Upload artifacts to MDTP S3 buckets"
   echo -e " - cut_release\t\t Creates a release tag in the repository"
   echo
 }
@@ -190,7 +207,7 @@ main() {
   # Validate command arguments
   [ "$#" -ne 1 ] && help && exit 1
   function="$1"
-  functions="help debug_env open_shell unittest package publish_s3 rename_s3_file publish publish_checksum_file prepare_release print_configs cut_release"
+  functions="help debug_env open_shell unittest package publish publish_artifacts publish_artifacts_mdtp publish_artifacts_cip prepare_release print_configs cut_release"
   [[ $functions =~ (^|[[:space:]])"$function"($|[[:space:]]) ]] || (echo -e "\n\"$function\" is not a valid command. Try \"$0 help\" for more details" && exit 2)
 
   # Ensure build folder is available
