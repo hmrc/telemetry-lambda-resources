@@ -138,7 +138,7 @@ publish_to_artifactory() {
        --header "X-Checksum-Sha1: ${PACKAGE_SHA1}" \
        --header "X-Checksum-Sha256: ${PACKAGE_SHA256}" \
        --upload-file "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" \
-       "https://artefacts.tax.service.gov.uk/artifactory/General/telemetry-lambda-packages/${PROJECT_FULL_NAME}/${PACKAGE_NAME}"
+       "https://artefacts.tax.service.gov.uk/artifactory/telemetry-lambda-packages/${PROJECT_FULL_NAME}/${PACKAGE_NAME}"
 
   print_completed
 }
