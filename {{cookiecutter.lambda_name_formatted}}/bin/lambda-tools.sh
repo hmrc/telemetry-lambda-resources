@@ -98,8 +98,8 @@ prepare_release() {
   print_completed
 }
 
-# Upload artifacts to S3
-publish_artifacts() {
+# Upload artifacts to S3 - default behaviour, Lambda should always deploy to S3
+publish_to_s3() {
   print_begins
 
   export_version
@@ -115,38 +115,30 @@ publish_artifacts() {
   print_completed
 }
 
-publish_artifacts_cip() {
+# Upload artifacts to Artifactory - optional behaviour for any Lambdas that are shared outside of Telemetry
+publish_to_artifactory() {
   print_begins
 
   export_version
-  export S3_OBJECT_KEY="${PROJECT_FULL_NAME}.${VERSION}.zip"
-  export S3_OBJECT_HASH_KEY="${S3_OBJECT_KEY}.base64sha256"
+  export PACKAGE_NAME="${PROJECT_FULL_NAME}.${VERSION}.zip"
 
-  for env in integration qa externaltest staging production ; do
-    aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "s3://txm-lambda-functions-${env}/${S3_OBJECT_KEY}" \
-      --acl=bucket-owner-full-control
-    aws s3 cp "${PATH_BUILD}/${LAMBDA_HASH_NAME}" "s3://txm-lambda-functions-${env}/${S3_OBJECT_HASH_KEY}" \
-       --acl=bucket-owner-full-control \
-       --content-type text/plain
-  done
+  PACKAGE_MD5=$(md5sum "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" | awk '{print $1}')
+  PACKAGE_SHA1=$(sha1sum "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" | awk '{print $1}')
+  PACKAGE_SHA256=$(sha256sum "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" | awk '{print $1}')
 
-  print_completed
-}
+  export PACKAGE_MD5=${PACKAGE_MD5}
+  export PACKAGE_SHA1=${PACKAGE_SHA1}
+  export PACKAGE_SHA256=${PACKAGE_SHA256}
 
-publish_artifacts_mdtp() {
-  print_begins
-
-  export_version
-  export S3_OBJECT_KEY="${PROJECT_FULL_NAME}.${VERSION}.zip"
-  export S3_OBJECT_HASH_KEY="${S3_OBJECT_KEY}.base64sha256"
-
-  for env in integration development qa staging management externaltest production ; do
-    aws s3 cp "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" "s3://mdtp-lambda-functions-${env}/${S3_OBJECT_KEY}" \
-      --acl=bucket-owner-full-control
-    aws s3 cp "${PATH_BUILD}/${LAMBDA_HASH_NAME}" "s3://mdtp-lambda-functions-${env}/${S3_OBJECT_HASH_KEY}" \
-       --acl=bucket-owner-full-control \
-       --content-type text/plain
-  done
+  curl --request PUT \
+       --fail \
+       --silent \
+       --header "Authorization: Bearer ${ARTIFACTORY_TOKEN}" \
+       --header "X-Checksum: ${PACKAGE_MD5}" \
+       --header "X-Checksum-Sha1: ${PACKAGE_SHA1}" \
+       --header "X-Checksum-Sha256: ${PACKAGE_SHA256}" \
+       --upload-file "${PATH_BUILD}/${LAMBDA_ZIP_NAME}" \
+       "https://artefacts.tax.service.gov.uk/artifactory/General/telemetry-lambda-packages/${PROJECT_FULL_NAME}/${PACKAGE_NAME}"
 
   print_completed
 }
@@ -162,7 +154,7 @@ export_version() {
   fi
 
   VERSION=$(cat .version)
-  export
+  export VERSION=${VERSION}
 }
 
 help() {
@@ -171,9 +163,8 @@ help() {
   echo "Available commands:"
   echo -e " - package\t\t\t Prepare dependencies and build the Lambda function code using Docker"
   echo -e " - prepare_release\t\t Bump the function's version when appropriate"
-  echo -e " - publish_artifacts\t Upload artifacts to ${S3_ADDRESS}"
-  echo -e " - publish_artifacts_cip\t Upload artifacts to CiP (txm) S3 buckets"
-  echo -e " - publish_artifacts_mdtp\t Upload artifacts to MDTP S3 buckets"
+  echo -e " - publish_to_s3\t Upload artifacts to ${S3_ADDRESS}"
+  echo -e " - publish_to_artifactory\t Upload artifacts to B&D's artifactory repository"
   echo -e " - cut_release\t\t Creates a release tag in the repository"
   echo
 }
@@ -207,7 +198,7 @@ main() {
   # Validate command arguments
   [ "$#" -ne 1 ] && help && exit 1
   function="$1"
-  functions="help debug_env open_shell unittest package publish_artifacts publish_artifacts_mdtp publish_artifacts_cip prepare_release print_configs cut_release"
+  functions="help debug_env open_shell unittest package publish_to_s3 publish_to_artifactory prepare_release print_configs cut_release"
   [[ $functions =~ (^|[[:space:]])"$function"($|[[:space:]]) ]] || (echo -e "\n\"$function\" is not a valid command. Try \"$0 help\" for more details" && exit 2)
 
   # Ensure build folder is available
