@@ -79,6 +79,10 @@ publish_to_s3: ## Build and push lambda zip to S3 (requires MDTP_ENVIRONMENT to 
 	@./bin/lambda-tools.sh publish_to_s3
 .PHONY: publish_to_s3
 
+publish_to_cip_s3: ## Build and push lambda zip to CIP S3
+	@./bin/lambda-tools.sh publish_to_cip_s3
+.PHONY: publish_to_cip_s3
+
 publish_to_artifactory: ## Build and push lambda zip to Artifactory
 	@./bin/lambda-tools.sh publish_to_artifactory
 .PHONY: publish_to_artifactory
