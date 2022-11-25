@@ -72,8 +72,8 @@ prepare_release: ## Runs prepare release
 	@./bin/lambda-tools.sh prepare_release
 .PHONY: prepare_release
 
-publish: publish_to_s3 publish_to_artifactory
-.PHONY: publish_artifacts
+publish: publish_to_s3
+.PHONY: publish
 
 publish_to_s3: ## Build and push lambda zip to S3 (requires MDTP_ENVIRONMENT to be set to an environment)
 	@./bin/lambda-tools.sh publish_to_s3
