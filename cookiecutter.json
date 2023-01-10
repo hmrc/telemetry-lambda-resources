@@ -6,5 +6,6 @@
   "lambda_handler": "handler.lambda_handler",
   "lambda_name": null,
   "lambda_name_formatted": "{{ cookiecutter.lambda_name|lower|replace(' ', '-') }}",
+  "safety_disabled": false,
   "unit_test_style": "pytest"
 }

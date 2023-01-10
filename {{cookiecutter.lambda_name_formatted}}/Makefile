@@ -88,7 +88,11 @@ publish_to_artifactory: ## Build and push lambda zip to Artifactory
 .PHONY: publish_to_artifactory
 
 safety: ## Run Safety
+{%- if cookiecutter.safety_disabled -%}
+	@echo Safety check is disabled in Cruft configuration
+{%- else -%}
 	@poetry run safety check
+{% endif %}
 .PHONY: safety
 
 setup: check_poetry ## Setup virtualenv & dependencies using poetry and set-up the git hook scripts
