@@ -88,7 +88,7 @@ publish_to_artifactory: ## Build and push lambda zip to Artifactory
 .PHONY: publish_to_artifactory
 
 safety: ## Run Safety
-{%- if cookiecutter.safety_disabled %}
+{%- if cookiecutter.safety_disabled == "yes" %}
 	@echo Safety check is disabled
 {%- else %}
 	@poetry run safety check
