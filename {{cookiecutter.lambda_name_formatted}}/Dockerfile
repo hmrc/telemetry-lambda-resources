@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.9
+FROM public.ecr.aws/lambda/python:{{ cookiecutter.python_version }}
 
 RUN yum install ca-certificates -y
 
