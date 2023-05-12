@@ -24,6 +24,13 @@ apt-get -y upgrade
 python -m venv "${VENV_NAME}"
 source ./"${VENV_NAME}"/bin/activate
 pip install --upgrade pip
-pip install --requirement "${REQUIREMENTS_FILE}"
+pip install --requirement "${REQUIREMENTS_FILE}" \
+            --platform manylinux2014_x86_64 \
+            --target=./${VENV_NAME}/lib/python3.9/site-packages \
+            --implementation cp \
+            --only-binary=:all:
+
+# Make the binary location specified in --target above, available to PATH
+export PATH="$PATH:./${VENV_NAME}/lib/python3.9/site-packages/bin"
 
 exec "$@"
