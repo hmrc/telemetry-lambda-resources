@@ -5,7 +5,7 @@ set -eu
 apt install -y libssl-dev zip
 mkdir -p build
 # Package the dependencies
-cd "./${VENV_NAME}/lib/python3.9/site-packages"
+cd "./${VENV_NAME}/lib/python{{ cookiecutter.python_version }}/site-packages"
 zip -r "../../../../build/${LAMBDA_ZIP_NAME}" .
 cd -
 # Package the source
