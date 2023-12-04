@@ -85,8 +85,10 @@ publish_to_cip_s3: ## Build and push lambda zip to CIP S3
 	@./bin/lambda-tools.sh publish_to_cip_s3
 .PHONY: publish_to_cip_s3
 
+PIP_INDEX_URL=https://artefacts.tax.service.gov.uk/artifactory/api/pypi/pips/simple
 setup: check_poetry ## Setup virtualenv & dependencies using poetry and set-up the git hook scripts
-	@export POETRY_VIRTUALENVS_IN_PROJECT=$(POETRY_VIRTUALENVS_IN_PROJECT) && poetry run pip install --upgrade pip
+	@export POETRY_VIRTUALENVS_IN_PROJECT=$(POETRY_VIRTUALENVS_IN_PROJECT) && poetry run pip install \
+	--index-url https://artefacts.tax.service.gov.uk/artifactory/api/pypi/pips/simple --upgrade pip
 	@poetry config --list
 	@poetry install --no-root
 	@poetry run pre-commit install
