@@ -6,7 +6,7 @@
   "lambda_handler": "handler.lambda_handler",
   "lambda_name": null,
   "lambda_name_formatted": "{{ cookiecutter.lambda_name|lower|replace(' ', '-') }}",
-  "python_version": "3.9",
-  "python_version_full": "3.9.15",
+  "python_version": "3.12",
+  "python_version_full": "3.12.4",
   "unit_test_style": "pytest"
 }
