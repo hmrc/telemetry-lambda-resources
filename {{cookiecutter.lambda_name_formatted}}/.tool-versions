@@ -1,3 +1,0 @@
-poetry 1.6.1
-python {{ cookiecutter.python_version_full }}
-pre-commit 3.3.3
