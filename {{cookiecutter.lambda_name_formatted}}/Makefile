@@ -5,7 +5,7 @@ POETRY_REQUIRED := $(shell cat .poetry-version)
 POETRY_VIRTUALENVS_IN_PROJECT ?= true
 PYTHON_OK := $(shell type -P python)
 PYTHON_REQUIRED := $(shell cat .python-version | cut -d'.' -f1,2)
-PYTHON_VERSION ?= $(shell python --version | cut -d' ' -f2 | cut -d'.' -f1,2)
+PYTHON_VERSION := $(shell python --version | cut -d' ' -f2 | cut -d'.' -f1,2)
 
 ### WARNING! This is a generated file and should ONLY be edited in https://github.com/hmrc/telemetry-lambda-resources
 
